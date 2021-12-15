@@ -53,6 +53,7 @@ import Coin from './Coin';
 import CoinsGroup from './CoinsGroup';
 import CoinsList from './CoinsGroup/CoinsList';
 import CharacterCount from './CharacterCount';
+import TooltipSymbol from './TooltipSymbol';
 
 export {
     Backdrop,
@@ -114,5 +115,6 @@ export {
     CoinsGroup,
     CoinsList,
     CharacterCount,
+    TooltipSymbol,
 };
 export type { ImageProps, ModalProps };

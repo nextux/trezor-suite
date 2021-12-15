@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
-import { CoinInfo } from 'trezor-connect';
-import { Input, Button, variables } from '@trezor/components';
-import { Translation } from '@suite-components/Translation';
-import { Network } from '@suite/types/wallet';
-import { BlockbookUrl } from '@wallet-types/blockbook';
+import TrezorConnect, { CoinInfo } from 'trezor-connect';
+import { Input, Button, variables, Tooltip } from '@trezor/components';
+import { Translation, TooltipSymbol } from '@suite-components';
 import { isUrl } from '@suite-utils/validators';
 import { useTranslation } from '@suite-hooks/useTranslation';
 import InputError from '@wallet-components/InputError';
+import * as walletSettingsActions from '@settings-actions/walletSettingsActions';
+import { useActions, useSelector } from '@suite-hooks';
+import ConnectionInfo from './ConnectionInfo';
+import type { Network } from '@wallet-types';
 
 const Wrapper = styled.div`
     display: flex;
@@ -16,9 +18,12 @@ const Wrapper = styled.div`
     text-align: left;
 `;
 
-const AddButton = styled(Button)`
-    align-self: flex-start;
-    margin-top: 12px;
+const ButtonRow = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    & > * + * {
+        margin-left: 12px;
+    }
 `;
 
 const Heading = styled.span`
@@ -29,39 +34,41 @@ const Heading = styled.span`
     margin-bottom: 6px;
 `;
 
-const Description = styled.span`
-    color: ${props => props.theme.TYPE_LIGHT_GREY};
-    font-size: ${variables.FONT_SIZE.SMALL};
-    font-weight: 500;
-    line-height: 1.57;
-    /* margin-bottom: 14px; */
-`;
-
-const DefaultValues = styled(Description)`
-    font-weight: 500;
-    /* margin-top: 4px; */
-    margin-bottom: 14px;
+const TooltipContent = styled.div`
+    display: flex;
+    flex-direction: column;
 `;
 
 interface Props {
     coin: Network['symbol'];
-    coinInfo: CoinInfo;
-    blockbookUrls: BlockbookUrl[];
-    addBlockbookUrl: (params: BlockbookUrl) => void;
-    removeBlockbookUrl: (params: BlockbookUrl) => void;
 }
 
 type FormInputs = {
     url: string;
 };
 
-const CustomBlockbookUrls = ({
-    coin,
-    coinInfo,
-    blockbookUrls,
-    addBlockbookUrl,
-    removeBlockbookUrl,
-}: Props) => {
+const useCoinInfo = (coin: Network['symbol']) => {
+    const [coinInfo, setCoinInfo] = useState<CoinInfo>();
+    useEffect(() => {
+        TrezorConnect.getCoinInfo({ coin }).then(result => {
+            if (result.success) {
+                setCoinInfo(result.payload);
+            }
+        });
+    }, [coin]);
+    return coinInfo;
+};
+
+const CustomBlockbookUrls = ({ coin }: Props) => {
+    const { addBlockbookUrl, removeBlockbookUrl } = useActions({
+        addBlockbookUrl: walletSettingsActions.addBlockbookUrl,
+        removeBlockbookUrl: walletSettingsActions.removeBlockbookUrl,
+    });
+    const { blockbookUrls } = useSelector(state => ({
+        blockbookUrls: state.wallet.settings.blockbookUrls,
+    }));
+    const coinInfo = useCoinInfo(coin);
+
     const { register, getValues, setValue, watch, errors } = useForm<FormInputs>({
         mode: 'onChange',
     });
@@ -87,20 +94,20 @@ const CustomBlockbookUrls = ({
         <Wrapper>
             <Heading>
                 <Translation id="SETTINGS_ADV_COIN_BLOCKBOOK_TITLE" />
-            </Heading>
-            <Description>
-                <Translation id="SETTINGS_ADV_COIN_BLOCKBOOK_DESCRIPTION" />
-            </Description>
-            <DefaultValues>
-                <Translation
-                    id="TR_DEFAULT_VALUE"
-                    values={{
-                        value: coinInfo.blockchainLink
-                            ? coinInfo.blockchainLink.url.join(', ')
-                            : '',
-                    }}
+                <TooltipSymbol
+                    content={
+                        <TooltipContent>
+                            <Translation id="SETTINGS_ADV_COIN_BLOCKBOOK_DESCRIPTION" />
+                            <Translation
+                                id="TR_DEFAULT_VALUE"
+                                values={{
+                                    value: coinInfo?.blockchainLink?.url.join(', ') ?? '',
+                                }}
+                            />
+                        </TooltipContent>
+                    }
                 />
-            </DefaultValues>
+            </Heading>
 
             {urls.map(b => (
                 <Input
@@ -108,6 +115,7 @@ const CustomBlockbookUrls = ({
                     value={b.url}
                     noTopLabel
                     isDisabled
+                    noError
                     innerAddon={
                         <Button
                             variant="tertiary"
@@ -143,17 +151,25 @@ const CustomBlockbookUrls = ({
                 bottomText={<InputError error={error} />}
             />
 
-            {watchAll && (
-                <AddButton
-                    variant="tertiary"
-                    icon="PLUS"
-                    data-test="@settings/advance/button/add"
-                    onClick={addUrl}
-                    isDisabled={Boolean(error) || inputValue === ''}
-                >
-                    <Translation id="TR_ADD_NEW_BLOCKBOOK_BACKEND" />
-                </AddButton>
-            )}
+            <ButtonRow>
+                <Tooltip maxWidth={800} content={<ConnectionInfo coin={coin} />}>
+                    <Button variant="tertiary">
+                        <Translation id="SETTINGS_ADV_COIN_CONN_INFO_TITLE" />
+                    </Button>
+                </Tooltip>
+
+                {watchAll && (
+                    <Button
+                        variant="tertiary"
+                        icon="PLUS"
+                        data-test="@settings/advance/button/add"
+                        onClick={addUrl}
+                        isDisabled={Boolean(error) || inputValue === ''}
+                    >
+                        <Translation id="TR_ADD_NEW_BLOCKBOOK_BACKEND" />
+                    </Button>
+                )}
+            </ButtonRow>
         </Wrapper>
     );
 };
