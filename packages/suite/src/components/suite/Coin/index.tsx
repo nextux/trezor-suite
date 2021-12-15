@@ -1,15 +1,35 @@
 import React from 'react';
+import { transparentize } from 'polished';
 import styled, { css } from 'styled-components';
 import { variables, CoinLogo, Icon, useTheme } from '@trezor/components';
 import { Translation } from '@suite-components';
-import { ExtendedMessageDescriptor } from '@suite-types';
-import { Network } from '@wallet-types';
+import { useActions } from '@suite-hooks';
+import { openModal as openModalAction } from '@suite-actions/modalActions';
+import type { ExtendedMessageDescriptor } from '@suite-types';
+import type { Network } from '@wallet-types';
+
+const SettingsWrapper = styled.div`
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    border-radius: 100%;
+    margin-right: -40px;
+    padding: 0 10px;
+    overflow: hidden;
+    transition: 0.3s ease;
+    &:hover {
+        background-color: ${props =>
+            transparentize(
+                props.theme.HOVER_TRANSPARENTIZE_FILTER,
+                props.theme.HOVER_PRIMER_COLOR,
+            )};
+    }
+`;
 
 const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
     display: flex;
     justify-items: flex-start;
     align-items: center;
-    padding: 0 15px;
     border: 1.5px solid ${props => props.theme.STROKE_GREY};
     background: ${props => props.theme.BG_WHITE};
     border-radius: 9999px;
@@ -19,6 +39,11 @@ const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
     color: ${props => props.theme.TYPE_DARK_GREY};
     cursor: pointer;
     transition: 0.3s ease;
+    overflow: hidden;
+
+    &:hover ${SettingsWrapper} {
+        margin-right: 0;
+    }
 
     &:disabled {
         cursor: not-allowed;
@@ -36,19 +61,21 @@ const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
 const ImageWrapper = styled.div`
     display: flex;
     justify-items: flex-start;
-    margin: 0 15px 0 0;
+    margin: 0 12px;
     position: relative;
 `;
 
 const Name = styled.div`
     font-size: ${variables.FONT_SIZE.NORMAL};
     margin-top: 1px;
+    margin-right: 10px;
 `;
 
 const NameWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    margin-right: 10px;
 `;
 
 const NameLabeled = styled.div`
@@ -90,6 +117,20 @@ interface Props extends React.HTMLAttributes<HTMLButtonElement> {
 
 const Coin = ({ symbol, name, label, selected = false, disabled = false, ...props }: Props) => {
     const theme = useTheme();
+
+    const { openModal } = useActions({
+        openModal: openModalAction,
+    });
+
+    const openSettings = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        if (disabled) return;
+        openModal({
+            type: 'advanced-coin-settings',
+            coin: symbol,
+        });
+    };
+
     return (
         <CoinWrapper selected={selected} disabled={disabled} {...props}>
             <ImageWrapper>
@@ -107,6 +148,11 @@ const Coin = ({ symbol, name, label, selected = false, disabled = false, ...prop
                 </NameWrapper>
             ) : (
                 <Name>{name}</Name>
+            )}
+            {!disabled && (
+                <SettingsWrapper>
+                    <Icon icon="SETTINGS" onClick={openSettings} />
+                </SettingsWrapper>
             )}
         </CoinWrapper>
     );
