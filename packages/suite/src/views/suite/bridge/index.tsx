@@ -4,7 +4,7 @@ import { Translation, Image, TrezorLink, Modal, Metadata } from '@suite-componen
 import { Button, P, Link, Select, useTheme, variables, Loader } from '@trezor/components';
 import * as routerActions from '@suite-actions/routerActions';
 import { URLS } from '@suite-constants';
-import { isDesktop, isWeb } from '@suite-utils/env';
+import { isDesktop } from '@suite-utils/env';
 import { useSelector, useActions } from '@suite-hooks';
 
 const Content = styled.div`
@@ -98,9 +98,8 @@ const InstallBridge = () => {
     const actions = useActions({
         goto: routerActions.goto,
     });
-    const { tor, transport } = useSelector(state => ({
+    const { transport } = useSelector(state => ({
         transport: state.suite.transport,
-        tor: state.suite.tor,
     }));
     const theme = useTheme();
     const [selectedTarget, setSelectedTarget] = useState<Installer | null>(null);
@@ -176,13 +175,6 @@ const InstallBridge = () => {
                             </DownloadBridgeButton>
                         </TrezorLink>
                     </Download>
-                )}
-                {isWeb() && tor && (
-                    <P>
-                        <TrezorLink href={URLS.WIKI_TOR}>
-                            <Translation id="TR_TOR_BRIDGE" />
-                        </TrezorLink>
-                    </P>
                 )}
             </Content>
 
