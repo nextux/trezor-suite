@@ -5755,6 +5755,10 @@ export default defineMessages({
         id: 'SETTINGS_ADV_COIN_URL_INPUT_PLACEHOLDER',
         defaultMessage: 'e.g. {url}',
     },
+    TR_DEFAULT: {
+        id: 'TR_DEFAULT',
+        defaultMessage: 'Default',
+    },
     TR_DEFAULT_VALUE: {
         id: 'TR_DEFAULT_VALUE',
         defaultMessage: 'Default: {value}',
@@ -5763,6 +5767,14 @@ export default defineMessages({
     TR_ADD_NEW_BLOCKBOOK_BACKEND: {
         id: 'TR_ADD_NEW_BLOCKBOOK_BACKEND',
         defaultMessage: 'Add new',
+    },
+    TR_BACKENDS: {
+        id: 'TR_BACKENDS',
+        defaultMessage: 'Backends',
+    },
+    TR_RESET: {
+        id: 'TR_RESET',
+        defaultMessage: 'Reset',
     },
     TR_CUSTOM_BACKEND_INVALID_URL: {
         id: 'TR_CUSTOM_BACKEND_INVALID_URL',

@@ -6,6 +6,18 @@ import { Action } from '@suite-types';
 import { Network } from '@wallet-types';
 import { BlockbookUrl } from '@wallet-types/blockbook';
 
+export type BackendType = 'blockbook' | 'electrum' | 'ripple';
+
+export type BackendSettings = {
+    coin: Network['symbol'];
+    type: BackendType;
+    urls: string[];
+};
+
+type Backends = {
+    [coin in BackendSettings['coin']]: Omit<BackendSettings, 'coin'>;
+};
+
 export interface State {
     localCurrency: string;
     discreetMode: boolean;
@@ -14,6 +26,7 @@ export interface State {
         [key: string]: Omit<FeeLevel, 'blocks'>; // Key: Network['symbol']
     };
     blockbookUrls: BlockbookUrl[];
+    backends: Partial<Backends>;
 }
 
 export const initialState: State = {
@@ -22,6 +35,7 @@ export const initialState: State = {
     enabledNetworks: ['btc'],
     lastUsedFeeLevel: {},
     blockbookUrls: [],
+    backends: {},
 };
 
 const settingsReducer = (state: State = initialState, action: Action): State =>
@@ -68,6 +82,23 @@ const settingsReducer = (state: State = initialState, action: Action): State =>
 
             case WALLET_SETTINGS.CLEAR_TOR_BLOCKBOOK_URLS:
                 draft.blockbookUrls = draft.blockbookUrls.filter(u => !u.tor);
+                break;
+
+            case WALLET_SETTINGS.SET_BACKEND: {
+                const { coin, type, urls } = action.payload;
+                if (!urls.length) {
+                    delete draft.backends[coin];
+                } else {
+                    draft.backends[coin] = {
+                        type,
+                        urls,
+                    };
+                }
+                break;
+            }
+
+            case WALLET_SETTINGS.REMOVE_BACKEND:
+                delete draft.backends[action.payload.coin];
                 break;
 
             // no default

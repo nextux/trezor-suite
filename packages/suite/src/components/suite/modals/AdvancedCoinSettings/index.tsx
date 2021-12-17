@@ -20,10 +20,6 @@ interface Props {
 const AdvancedCoinSettings = ({ coin, onCancel }: Props) => {
     const network = NETWORKS.find(n => n.symbol === coin);
 
-    // TODO: this condition is not correctly applied to Regtest (coinInfo?.blockchainLink === null)
-    // const isBlockbook = coinInfo?.blockchainLink?.type === 'blockbook';
-    const isBlockbook = network?.networkType !== 'ripple';
-
     return network ? (
         <Modal
             cancelable
@@ -36,13 +32,9 @@ const AdvancedCoinSettings = ({ coin, onCancel }: Props) => {
             }
         >
             {/* <AccountUnits /> */}
-
-            {isBlockbook && (
-                <Section>
-                    <CustomBlockbookUrls coin={coin} />
-                </Section>
-            )}
-
+            <Section>
+                <CustomBlockbookUrls network={network} onCancel={onCancel} />
+            </Section>
             {/* <CustomExplorerUrl /> */}
         </Modal>
     ) : null;

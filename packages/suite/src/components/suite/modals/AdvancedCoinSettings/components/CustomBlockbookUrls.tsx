@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
-import TrezorConnect, { CoinInfo } from 'trezor-connect';
-import { Input, Button, variables, Tooltip } from '@trezor/components';
+import TrezorConnect, { BlockchainLink } from 'trezor-connect';
+import { Input, Button, Tooltip, SelectBar, H3 } from '@trezor/components';
 import { Translation, TooltipSymbol } from '@suite-components';
 import { isUrl } from '@suite-utils/validators';
 import { useTranslation } from '@suite-hooks/useTranslation';
@@ -11,26 +11,30 @@ import * as walletSettingsActions from '@settings-actions/walletSettingsActions'
 import { useActions, useSelector } from '@suite-hooks';
 import ConnectionInfo from './ConnectionInfo';
 import type { Network } from '@wallet-types';
+import type { BackendType } from '@wallet-reducers/settingsReducer';
 
 const Wrapper = styled.div`
     display: flex;
     flex-direction: column;
     text-align: left;
+    & > * + * {
+        margin-top: 8px;
+    }
 `;
 
 const ButtonRow = styled.div`
     display: flex;
-    justify-content: flex-end;
     & > * + * {
         margin-left: 12px;
     }
 `;
 
-const Heading = styled.span`
+const ButtonConnectionInfo = styled(Tooltip)`
+    margin-left: auto;
+`;
+
+const Heading = styled(H3)`
     color: ${props => props.theme.TYPE_DARK_GREY};
-    font-size: ${variables.FONT_SIZE.NORMAL};
-    font-weight: 500;
-    line-height: 1.5;
     margin-bottom: 6px;
 `;
 
@@ -39,61 +43,160 @@ const TooltipContent = styled.div`
     flex-direction: column;
 `;
 
-interface Props {
-    coin: Network['symbol'];
-}
+const SaveButton = styled(Button)`
+    width: 200px;
+    margin-top: 30px;
+    align-self: center;
+`;
 
 type FormInputs = {
     url: string;
 };
 
-const useCoinInfo = (coin: Network['symbol']) => {
-    const [coinInfo, setCoinInfo] = useState<CoinInfo>();
+const useDefaultBackendSettings = (coin: Network['symbol']) => {
+    const [link, setLink] = useState<BlockchainLink>();
     useEffect(() => {
         TrezorConnect.getCoinInfo({ coin }).then(result => {
             if (result.success) {
-                setCoinInfo(result.payload);
+                setLink(result.payload.blockchainLink);
             }
         });
     }, [coin]);
-    return coinInfo;
+    return {
+        type: link?.type as BackendType,
+        urls: link?.url ?? [],
+    };
 };
 
-const CustomBlockbookUrls = ({ coin }: Props) => {
-    const { addBlockbookUrl, removeBlockbookUrl } = useActions({
-        addBlockbookUrl: walletSettingsActions.addBlockbookUrl,
-        removeBlockbookUrl: walletSettingsActions.removeBlockbookUrl,
-    });
-    const { blockbookUrls } = useSelector(state => ({
-        blockbookUrls: state.wallet.settings.blockbookUrls,
-    }));
-    const coinInfo = useCoinInfo(coin);
+type BackendValues = {
+    type: BackendType | 'default';
+    urls: string[];
+};
 
-    const { register, getValues, setValue, watch, errors } = useForm<FormInputs>({
+const getSupportedBackends = (network: Network): BackendType[] => {
+    if (network.networkType === 'ripple') return [];
+    if (network.symbol === 'btc') return ['blockbook', 'electrum'];
+    return ['blockbook'];
+};
+
+const getUrlPlaceholder = (network: Network, type: BackendType | 'default') => {
+    switch (type) {
+        case 'blockbook':
+            return `https://${network.symbol}1.trezor.io/`;
+        case 'electrum':
+            return `electrum.foobar.com:50001:t`;
+        default:
+            return '';
+    }
+};
+
+const useInitialValues = (coin: Network['symbol']): BackendValues => {
+    const { backend } = useSelector(state => ({
+        backend: state.wallet.settings.backends[coin],
+    }));
+    return {
+        type: backend?.type ?? 'default',
+        urls: backend?.urls ?? [],
+    };
+};
+
+const useUrlInput = (currentUrls: string[]) => {
+    const { register, watch, setValue, errors } = useForm<FormInputs>({
         mode: 'onChange',
     });
+
+    const name = 'url';
+    const ref = register({
+        validate: (value: string) => {
+            // Check if URL is valid
+            if (!isUrl(value)) {
+                return 'TR_CUSTOM_BACKEND_INVALID_URL';
+            }
+
+            // Check if already exists
+            if (currentUrls.find(url => url === value)) {
+                return 'TR_CUSTOM_BACKEND_BACKEND_ALREADY_ADDED';
+            }
+        },
+    });
+
+    return {
+        name,
+        ref,
+        error: errors[name],
+        value: watch(name) || '',
+        reset: () => setValue(name, ''),
+    };
+};
+
+interface Props {
+    network: Network;
+    onCancel: () => void;
+}
+
+const CustomBlockbookUrls = ({ network, onCancel }: Props) => {
+    const { symbol: coin } = network;
+    const { setBackend } = useActions({
+        setBackend: walletSettingsActions.setBackend,
+    });
+
     const { translationString } = useTranslation();
+    const defaults = useDefaultBackendSettings(coin);
+    const initialValues = useInitialValues(coin);
 
-    const inputName = 'url';
-    const inputValue = getValues(inputName) || '';
-    const error = errors[inputName];
+    const [currentValues, setCurrentValues] = useState(initialValues);
 
-    const addUrl = () => {
-        addBlockbookUrl({
-            coin,
-            url: inputValue,
+    const input = useUrlInput(currentValues.urls);
+
+    const changeType = (type: BackendValues['type']) => {
+        setCurrentValues({
+            type,
+            urls: [],
         });
-
-        setValue(inputName, '');
     };
 
-    const urls = blockbookUrls.filter(b => b.coin === coin);
-    const watchAll = watch();
+    const addUrl = () => {
+        setCurrentValues(({ type, urls }) => ({
+            type,
+            urls: [...urls, input.value],
+        }));
+        input.reset();
+    };
+
+    const removeUrl = (url: string) => {
+        setCurrentValues(({ type, urls }) => ({
+            type,
+            urls: urls.filter(u => u !== url),
+        }));
+    };
+
+    const reset = () => {
+        setCurrentValues(initialValues);
+    };
+
+    const save = () => {
+        const { type, urls } = currentValues;
+        setBackend({
+            coin,
+            type: type === 'default' ? 'blockbook' : type,
+            urls: type === 'default' ? [] : urls,
+        });
+        onCancel();
+    };
+
+    const editable = currentValues.type !== 'default';
+
+    const changed =
+        currentValues.type !== initialValues.type ||
+        currentValues.urls.length !== initialValues.urls.length ||
+        !!currentValues.urls.find((url, i) => url !== initialValues.urls[i]);
+
+    const supportedBackends = getSupportedBackends(network);
 
     return (
         <Wrapper>
             <Heading>
-                <Translation id="SETTINGS_ADV_COIN_BLOCKBOOK_TITLE" />
+                <Translation id="TR_BACKENDS" />
                 <TooltipSymbol
                     content={
                         <TooltipContent>
@@ -101,7 +204,7 @@ const CustomBlockbookUrls = ({ coin }: Props) => {
                             <Translation
                                 id="TR_DEFAULT_VALUE"
                                 values={{
-                                    value: coinInfo?.blockchainLink?.url.join(', ') ?? '',
+                                    value: defaults.urls.join(', ') ?? '',
                                 }}
                             />
                         </TooltipContent>
@@ -109,67 +212,84 @@ const CustomBlockbookUrls = ({ coin }: Props) => {
                 />
             </Heading>
 
-            {urls.map(b => (
+            {!!supportedBackends.length && (
+                <SelectBar
+                    selectedOption={currentValues.type}
+                    onChange={changeType}
+                    options={[
+                        { label: <Translation id="TR_DEFAULT" />, value: 'default' },
+                        ...supportedBackends.map(be => ({ label: be, value: be })),
+                    ]}
+                />
+            )}
+
+            {(editable ? currentValues.urls : defaults.urls).map(url => (
                 <Input
-                    key={b.url}
-                    value={b.url}
+                    key={url}
+                    value={url}
                     noTopLabel
                     isDisabled
                     noError
                     innerAddon={
-                        <Button
-                            variant="tertiary"
-                            icon="CROSS"
-                            onClick={() => removeBlockbookUrl(b)}
-                        />
+                        editable ? (
+                            <Button
+                                variant="tertiary"
+                                icon="CROSS"
+                                onClick={() => removeUrl(url)}
+                            />
+                        ) : null
                     }
                 />
             ))}
 
-            <Input
-                type="text"
-                noTopLabel
-                name={inputName}
-                data-test={`@settings/advance/${inputName}`}
-                placeholder={translationString('SETTINGS_ADV_COIN_URL_INPUT_PLACEHOLDER', {
-                    url: `https://${coin}1.trezor.io/`,
-                })}
-                innerRef={register({
-                    validate: (value: string) => {
-                        // Check if URL is valid
-                        if (!isUrl(value)) {
-                            return 'TR_CUSTOM_BACKEND_INVALID_URL';
-                        }
-
-                        // Check if already exists
-                        if (blockbookUrls.find(b => b.coin === coin && b.url === value)) {
-                            return 'TR_CUSTOM_BACKEND_BACKEND_ALREADY_ADDED';
-                        }
-                    },
-                })}
-                state={error ? 'error' : undefined}
-                bottomText={<InputError error={error} />}
-            />
+            {editable && (
+                <Input
+                    type="text"
+                    noTopLabel
+                    name={input.name}
+                    data-test={`@settings/advance/${input.name}`}
+                    placeholder={translationString('SETTINGS_ADV_COIN_URL_INPUT_PLACEHOLDER', {
+                        url: getUrlPlaceholder(network, currentValues.type),
+                    })}
+                    innerRef={input.ref}
+                    state={input.error ? 'error' : undefined}
+                    bottomText={<InputError error={input.error} />}
+                />
+            )}
 
             <ButtonRow>
-                <Tooltip maxWidth={800} content={<ConnectionInfo coin={coin} />}>
+                {changed && (
+                    <Button
+                        variant="tertiary"
+                        data-test="@settings/advance/button/reset"
+                        onClick={reset}
+                    >
+                        <Translation id="TR_RESET" />
+                    </Button>
+                )}
+
+                <ButtonConnectionInfo maxWidth={800} content={<ConnectionInfo coin={coin} />}>
                     <Button variant="tertiary">
                         <Translation id="SETTINGS_ADV_COIN_CONN_INFO_TITLE" />
                     </Button>
-                </Tooltip>
+                </ButtonConnectionInfo>
 
-                {watchAll && (
+                {editable && (
                     <Button
                         variant="tertiary"
                         icon="PLUS"
                         data-test="@settings/advance/button/add"
                         onClick={addUrl}
-                        isDisabled={Boolean(error) || inputValue === ''}
+                        isDisabled={Boolean(input.error) || input.value === ''}
                     >
                         <Translation id="TR_ADD_NEW_BLOCKBOOK_BACKEND" />
                     </Button>
                 )}
             </ButtonRow>
+
+            <SaveButton variant="primary" onClick={save} isDisabled={!changed}>
+                <Translation id="TR_CONFIRM" />
+            </SaveButton>
         </Wrapper>
     );
 };
