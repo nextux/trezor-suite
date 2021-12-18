@@ -7,16 +7,18 @@ import { useActions } from '@suite-hooks';
 import { openModal as openModalAction } from '@suite-actions/modalActions';
 import type { ExtendedMessageDescriptor } from '@suite-types';
 import type { Network } from '@wallet-types';
+import type { BackendSettings } from '@wallet-reducers/settingsReducer';
 
 const SettingsWrapper = styled.div`
     display: flex;
     align-self: stretch;
     align-items: center;
     border-radius: 100%;
-    margin-right: -40px;
+    margin-right: -36px;
     padding: 0 10px;
     overflow: hidden;
     transition: 0.3s ease;
+    position: relative;
     &:hover {
         background-color: ${props =>
             transparentize(
@@ -24,6 +26,15 @@ const SettingsWrapper = styled.div`
                 props.theme.HOVER_PRIMER_COLOR,
             )};
     }
+`;
+
+const ImageWrapper = styled.div`
+    display: flex;
+    justify-items: flex-start;
+    margin-right: 12px;
+    margin-left: 12px;
+    position: relative;
+    transition: 0.3s ease;
 `;
 
 const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
@@ -41,9 +52,17 @@ const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
     transition: 0.3s ease;
     overflow: hidden;
 
-    &:hover ${SettingsWrapper} {
-        margin-right: 0;
-    }
+    ${props =>
+        !props.disabled &&
+        css`
+            &:hover ${SettingsWrapper} {
+                margin-right: 0;
+            }
+
+            &:hover ${ImageWrapper} {
+                margin-left: -24px;
+            }
+        `}
 
     &:disabled {
         cursor: not-allowed;
@@ -56,13 +75,6 @@ const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
         css`
             border-color: ${props.theme.BG_GREEN};
         `}
-`;
-
-const ImageWrapper = styled.div`
-    display: flex;
-    justify-items: flex-start;
-    margin: 0 12px;
-    position: relative;
 `;
 
 const Name = styled.div`
@@ -104,18 +116,32 @@ const Check = styled.div<{ visible: boolean }>`
     right: -2px;
     opacity: 0;
     transition: opacity 0.3s ease;
-    ${props => props.visible && `opacity: 1`}
+    ${props => props.visible && `opacity: 1;`}
+`;
+
+const BackendCheck = styled(Check)`
+    top: 8px;
+    right: 8px;
 `;
 
 interface Props extends React.HTMLAttributes<HTMLButtonElement> {
     symbol: Network['symbol'];
+    backend?: Omit<BackendSettings, 'coin'>;
     name: Network['name'];
     label?: ExtendedMessageDescriptor['id'];
     selected: boolean;
     disabled?: boolean;
 }
 
-const Coin = ({ symbol, name, label, selected = false, disabled = false, ...props }: Props) => {
+const Coin = ({
+    symbol,
+    backend,
+    name,
+    label,
+    selected = false,
+    disabled = false,
+    ...props
+}: Props) => {
     const theme = useTheme();
 
     const { openModal } = useActions({
@@ -150,8 +176,11 @@ const Coin = ({ symbol, name, label, selected = false, disabled = false, ...prop
                 <Name>{name}</Name>
             )}
             {!disabled && (
-                <SettingsWrapper>
-                    <Icon icon="SETTINGS" onClick={openSettings} />
+                <SettingsWrapper onClick={openSettings}>
+                    <Icon icon="BACKEND" />
+                    <BackendCheck visible={!!backend}>
+                        <Icon size={8} color={theme.TYPE_WHITE} icon="CHECK" />
+                    </BackendCheck>
                 </SettingsWrapper>
             )}
         </CoinWrapper>
