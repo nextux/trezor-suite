@@ -544,7 +544,7 @@ export const customBacked = [
             { coin: 'ltc' },
             { coin: 'eth' },
         ],
-        symbol: 'btc',
+        symbol: 'btc' as const,
         blockchainSetCustomBackend: 1,
     },
 ];

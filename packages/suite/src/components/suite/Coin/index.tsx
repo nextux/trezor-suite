@@ -14,11 +14,12 @@ const SettingsWrapper = styled.div`
     align-self: stretch;
     align-items: center;
     border-radius: 100%;
-    margin-right: -36px;
+    margin-right: -30px;
     padding: 0 10px;
     overflow: hidden;
     transition: 0.3s ease;
     position: relative;
+    opacity: 0;
     &:hover {
         background-color: ${props =>
             transparentize(
@@ -35,6 +36,7 @@ const ImageWrapper = styled.div`
     margin-left: 12px;
     position: relative;
     transition: 0.3s ease;
+    opacity: 1;
 `;
 
 const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
@@ -57,10 +59,12 @@ const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
         css`
             &:hover ${SettingsWrapper} {
                 margin-right: 0;
+                opacity: 1;
             }
 
             &:hover ${ImageWrapper} {
-                margin-left: -24px;
+                margin-left: -18px;
+                opacity: 0;
             }
         `}
 
@@ -80,7 +84,6 @@ const CoinWrapper = styled.button<{ selected: boolean; disabled: boolean }>`
 const Name = styled.div`
     font-size: ${variables.FONT_SIZE.NORMAL};
     margin-top: 1px;
-    margin-right: 10px;
 `;
 
 const NameWrapper = styled.div`
