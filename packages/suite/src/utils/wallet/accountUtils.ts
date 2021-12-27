@@ -53,6 +53,8 @@ export const getTitleForNetwork = (symbol: Account['symbol']) => {
             return 'TR_NETWORK_DIGIBYTE';
         case 'doge':
             return 'TR_NETWORK_DOGECOIN';
+        case 'fjc':
+            return 'TR_NETWORK_FUJICOIN';
         case 'ltc':
             return 'TR_NETWORK_LITECOIN';
         case 'nmc':
