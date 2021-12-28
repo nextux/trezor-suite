@@ -57,7 +57,7 @@ const networks = [
     // Fujicoin
     {
         name: 'Fujicoin',
-        networkType: 'fujicoin',
+        networkType: 'bitcoin',
         symbol: 'fjc',
         bip43Path: "m/84'/75'/i'",
         decimals: 8,
@@ -69,7 +69,7 @@ const networks = [
     },
     {
         name: 'Fujicoin (Taproot)',
-        networkType: 'fujicoin',
+        networkType: 'bitcoin',
         accountType: 'taproot',
         symbol: 'fjc',
         bip43Path: "m/86'/75'/i'",
@@ -82,7 +82,7 @@ const networks = [
     },
     {
         name: 'Fujicoin (Legacy Segwit)',
-        networkType: 'fujicoin',
+        networkType: 'bitcoin',
         accountType: 'segwit',
         symbol: 'fjc',
         bip43Path: "m/49'/75'/i'",
@@ -95,7 +95,7 @@ const networks = [
     },
     {
         name: 'Fujicoin (Legacy)',
-        networkType: 'fujicoin',
+        networkType: 'bitcoin',
         accountType: 'legacy',
         symbol: 'fjc',
         bip43Path: "m/44'/75'/i'",
