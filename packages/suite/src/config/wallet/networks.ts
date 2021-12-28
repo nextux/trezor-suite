@@ -97,7 +97,7 @@ const networks = [
         name: 'Fujicoin (Legacy)',
         networkType: 'fujicoin',
         accountType: 'legacy',
-        symbol: 'btc',
+        symbol: 'fjc',
         bip43Path: "m/44'/75'/i'",
         decimals: 8,
         explorer: {
