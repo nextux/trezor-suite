@@ -995,6 +995,7 @@
   "TR_NETWORK_ETHEREUM_LABEL": "vč. ERC-20 tokenů",
   "TR_NETWORK_ETHEREUM_TESTNET": "Ethereum Testnet",
   "TR_NETWORK_ETHEREUM_TOOLTIP": "Podporované tokeny",
+  "TR_NETWORK_FUJICOIN": "Fujicoin",
   "TR_NETWORK_LITECOIN": "Litecoin",
   "TR_NETWORK_NAMECOIN": "Namecoin",
   "TR_NETWORK_NEM": "NEM",

@@ -358,6 +358,7 @@
   "TR_NETWORK_ETHEREUM_LABEL": "Вкл. ERC-20 токены",
   "TR_NETWORK_ETHEREUM_TESTNET": "Ethereum Testnet",
   "TR_NETWORK_ETHEREUM_TOOLTIP": "Поддерживаемые токены",
+  "TR_NETWORK_FUJICOIN": "Fujicoin",
   "TR_NETWORK_LITECOIN": "Litecoin",
   "TR_NETWORK_NAMECOIN": "Namecoin",
   "TR_NETWORK_VERTCOIN": "Vertcoin",

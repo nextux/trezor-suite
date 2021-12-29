@@ -54,6 +54,58 @@ const networks = [
         },
         features: ['rbf', 'sign-verify'],
     },
+    // Fujicoin
+    {
+        name: 'Fujicoin',
+        networkType: 'bitcoin',
+        symbol: 'fjc',
+        bip43Path: "m/84'/75'/i'",
+        decimals: 8,
+        explorer: {
+            tx: 'https://explorer.fujicoin.org/tx/',
+            account: 'https://explorer.fujicoin.org/xpub/',
+        },
+        features: ['rbf', 'sign-verify'],
+    },
+    {
+        name: 'Fujicoin (Taproot)',
+        networkType: 'bitcoin',
+        accountType: 'taproot',
+        symbol: 'fjc',
+        bip43Path: "m/86'/75'/i'",
+        decimals: 8,
+        explorer: {
+            tx: 'https://explorer.fujicoin.org/tx/',
+            account: 'https://explorer.fujicoin.org/xpub/',
+        },
+        features: ['rbf'],
+    },
+    {
+        name: 'Fujicoin (Legacy Segwit)',
+        networkType: 'bitcoin',
+        accountType: 'segwit',
+        symbol: 'fjc',
+        bip43Path: "m/49'/75'/i'",
+        decimals: 8,
+        explorer: {
+            tx: 'https://explorer.fujicoin.org/tx/',
+            account: 'https://explorer.fujicoin.org/xpub/',
+        },
+        features: ['rbf', 'sign-verify'],
+    },
+    {
+        name: 'Fujicoin (Legacy)',
+        networkType: 'bitcoin',
+        accountType: 'legacy',
+        symbol: 'fjc',
+        bip43Path: "m/44'/75'/i'",
+        decimals: 8,
+        explorer: {
+            tx: 'https://explorer.fujicoin.org/tx/',
+            account: 'https://explorer.fujicoin.org/xpub/',
+        },
+        features: ['rbf', 'sign-verify'],
+    },
     // Litecoin
     {
         name: 'Litecoin',

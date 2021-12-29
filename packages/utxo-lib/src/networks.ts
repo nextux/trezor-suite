@@ -97,6 +97,18 @@ export const bitcoingold: Network = {
     forkId: 0x4f /* 79 */,
 };
 
+export const fujicoin: Network = {
+    messagePrefix: '\x19FujiCoin Signed Message:\n',
+    bech32: 'fc',
+    bip32: {
+        public: 0x0488b21e,
+        private: 0x0488ade4,
+    },
+    pubKeyHash: 0x24,
+    scriptHash: 0x10,
+    wif: 0xa4,
+};
+
 export const litecoin: Network = {
     messagePrefix: '\x19Litecoin Signed Message:\n',
     bech32: 'ltc',

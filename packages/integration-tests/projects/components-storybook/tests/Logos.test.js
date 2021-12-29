@@ -14,6 +14,7 @@ describe('Icons', () => {
         'coin-doge',
         'coin-etc',
         'coin-eth',
+        'coin-fjc',
         'coin-ltc',
         'coin-nem',
         'coin-nmc',

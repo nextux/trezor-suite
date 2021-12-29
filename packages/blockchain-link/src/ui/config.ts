@@ -328,6 +328,29 @@ export default [
     },
     {
         blockchain: {
+            name: 'Fujicoin',
+            worker: 'js/blockbook-worker.js',
+            server: [
+                'https://explorer.fujicoin.org',
+            ],
+            debug: true,
+        },
+        data: {
+            address: '',
+            accountInfoOptions: {
+                page: 0,
+                pageSize: 25,
+            },
+            estimateFeeOptions: {
+                blocks: [1, 2, 10],
+            },
+            txid: '',
+            tx: '',
+            subscribe: '',
+        },
+    },
+    {
+        blockchain: {
             name: 'Litecoin',
             worker: 'js/blockbook-worker.js',
             server: [

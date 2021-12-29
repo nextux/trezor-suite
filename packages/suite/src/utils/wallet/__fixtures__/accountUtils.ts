@@ -314,6 +314,7 @@ export const accountTitleFixture = [
     { symbol: 'trop', title: 'TR_NETWORK_ETHEREUM_TESTNET' },
     { symbol: 'dgb', title: 'TR_NETWORK_DIGIBYTE' },
     { symbol: 'doge', title: 'TR_NETWORK_DOGECOIN' },
+    { symbol: 'fjc', title: 'TR_NETWORK_FUJICOIN' },
     { symbol: 'ltc', title: 'TR_NETWORK_LITECOIN' },
     { symbol: 'nmc', title: 'TR_NETWORK_NAMECOIN' },
     { symbol: 'vtc', title: 'TR_NETWORK_VERTCOIN' },
@@ -422,6 +423,26 @@ export const getBip43Type = [
     {
         description: 'bitcoin legacy',
         path: "m/44'/0'/0'",
+        result: 'bip44',
+    },
+    {
+        description: 'fujicoin taproot',
+        path: "m/86'/75'/0'",
+        result: 'bip86',
+    },
+    {
+        description: 'fujicoin segwit',
+        path: "m/84'/75'/0'",
+        result: 'bip84',
+    },
+    {
+        description: 'fujicoin legacy segwit',
+        path: "m/49'/75'/0'",
+        result: 'bip49',
+    },
+    {
+        description: 'fujicoin legacy',
+        path: "m/44'/75'/0'",
         result: 'bip44',
     },
     {
