@@ -478,6 +478,35 @@ export const networks = {
         caipId: 'bip122:12a765e31ffd4059bada1e25190f6e98',
         yieldXyzId: null,
     },
+    fjc: {
+        symbol: 'fjc',
+        displaySymbol: 'FJC',
+        name: 'Fujicoin',
+        networkType: 'bitcoin',
+        bip43Path: "m/84'/75'/i'",
+        decimals: 8,
+        testnet: false,
+        explorer: getExplorerUrls('https://explorer.fujicoin.org', 'bitcoin'),
+        features: ['rbf', 'sign-verify'],
+        backendTypes: ['blockbook', 'electrum'],
+        accountTypes: {
+            taproot: {
+                accountType: 'taproot',
+                bip43Path: "m/86'/75'/i'",
+                features: ['rbf'],
+            },
+            segwit: {
+                accountType: 'segwit',
+                bip43Path: "m/49'/75'/i'",
+            },
+            legacy: {
+                accountType: 'legacy',
+                bip43Path: "m/44'/75'/i'",
+            },
+        },
+        coingeckoId: 'fujicoin',
+        tradeCryptoId: 'fujicoin',
+    },
     bch: {
         symbol: 'bch',
         displaySymbol: 'BCH',

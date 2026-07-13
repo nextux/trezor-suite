@@ -17,6 +17,7 @@ export const coinsColors: CoinsColors = {
     dsol: '#9945ff',
     etc: '#60c67e',
     eth: '#454a75',
+    fjc: '#44aeea',
     ltc: '#a6a8a9',
     op: '#ff0720',
     avax: '#e84142',

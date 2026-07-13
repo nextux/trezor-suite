@@ -6,13 +6,13 @@ const isCodesignBuild = process.env.IS_CODESIGN_BUILD === 'true';
 // to be able to use patterns like ${author} and ${arch}
 module.exports = {
     // distinguish between dev and prod builds
-    appId: `io.trezor.TrezorSuite${isCodesignBuild ? '' : '.dev'}`,
+    appId: `fujicoin.org.TrezorSuite${isCodesignBuild ? '' : '.dev'}`,
     extraMetadata: {
         version: suiteVersion,
         // distinguish between dev and prod builds so different userDataDir is used
         name: `@trezor/suite-desktop${isCodesignBuild ? '' : '-dev'}`,
     },
-    productName: 'Trezor Suite',
+    productName: 'Fujicoin - Trezor Suite',
     copyright: 'Copyright © ${author}',
     asar: true,
     asarUnpack: ['**/*.node'],
@@ -93,7 +93,7 @@ module.exports = {
             },
         ],
         icon: 'build/static/images/desktop/512x512.icns',
-        artifactName: 'Trezor-Suite-${version}-mac-${arch}.${ext}',
+        artifactName: 'Fujicoin-Trezor-Suite-${version}-mac-${arch}.${ext}',
         hardenedRuntime: isCodesignBuild,
         gatekeeperAssess: false,
         darkModeSupport: true,
@@ -130,7 +130,7 @@ module.exports = {
             },
         ],
         icon: 'build/static/images/desktop/512x512.png',
-        artifactName: 'Trezor-Suite-${version}-win-${arch}.${ext}',
+        artifactName: 'Fujicoin-Trezor-Suite-${version}-win-${arch}.${ext}',
         target: ['nsis'],
         signExts: ['.exe', '.dll'],
         signtoolOptions: {
@@ -159,8 +159,8 @@ module.exports = {
             },
         ],
         icon: 'build/static/images/desktop/512x512.png',
-        artifactName: 'Trezor-Suite-${version}-linux-${arch}.${ext}',
-        executableName: 'trezor-suite',
+        artifactName: 'Fujicoin-Trezor-Suite-${version}-linux-${arch}.${ext}',
+        executableName: 'fujicoin-trezor-suite',
         category: 'Utility',
         target: ['AppImage'],
     },

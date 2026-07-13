@@ -22,6 +22,7 @@ export const localhostDomains = ['localhost', '127.0.0.1'];
 export const allowedDomains = [
     ...localhostDomains,
     'trezor.io',
+    'fujicoin.org',
     'sldev.cz', // Test environment, available only with VPN
     'invity.io',
     'api.github.com',

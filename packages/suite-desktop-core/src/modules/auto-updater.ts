@@ -34,6 +34,8 @@ const updaterURL = getSwitchValue('updater-url');
 export const SERVICE_NAME = 'auto-updater';
 
 export const init: ModuleInit = ({ mainWindowProxy, store }) => {
+    return;
+
     const { logger } = global;
     if (!isFeatureFlagEnabled('DESKTOP_AUTO_UPDATER') && !enableUpdater) {
         logger.info(SERVICE_NAME, 'Disabled via feature flag');

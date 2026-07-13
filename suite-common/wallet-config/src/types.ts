@@ -4,6 +4,7 @@ import { type DeviceModelInternal } from '@trezor/device-utils';
 export type NetworkSymbol =
     | 'btc'
     | 'ltc'
+    | 'fjc'
     | 'eth'
     | 'etc'
     | 'xrp'

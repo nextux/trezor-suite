@@ -731,7 +731,7 @@
             "address_type": 36,
             "address_type_p2sh": 16,
             "bech32_prefix": "fc",
-            "blockchain_link": { "type": "blockbook", "url": ["https://explorer.fujicoin.org"] },
+            "blockchain_link": { "type": "blockbook", "url": ["https://explorer.fujicoin.org","https://explorer2.fujicoin.org"] },
             "blocktime_seconds": 60,
             "cashaddr_prefix": null,
             "coin_label": "Fujicoin",
